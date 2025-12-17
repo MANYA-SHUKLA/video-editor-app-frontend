@@ -13,10 +13,12 @@ const ProcessingStatus = ({ jobId }: ProcessingStatusProps) => {
   const [status, setStatus] = useState<JobStatus | null>(null)
   const [isPolling, setIsPolling] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
 
   const fetchStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:5001/api/status/${jobId}`)
+      const statusUrl = API_BASE ? `${API_BASE}/api/status/${jobId}` : `/api/status/${jobId}`
+      const response = await fetch(statusUrl)
       if (!response.ok) {
         throw new Error('Failed to fetch status')
       }
@@ -24,7 +26,7 @@ const ProcessingStatus = ({ jobId }: ProcessingStatusProps) => {
       setStatus(data)
       setError(null)
       
-      // Stop polling if job is completed or failed
+   
       if (data.status === 'completed' || data.status === 'failed') {
         setIsPolling(false)
       }
@@ -47,7 +49,8 @@ const ProcessingStatus = ({ jobId }: ProcessingStatusProps) => {
     if (!status?.outputVideo) return
     
     try {
-      const response = await fetch(`http://localhost:5001/api/result/${jobId}`)
+      const resultUrl = API_BASE ? `${API_BASE}/api/result/${jobId}` : `/api/result/${jobId}`
+      const response = await fetch(resultUrl)
       if (!response.ok) {
         throw new Error('Failed to download video')
       }
