@@ -93,7 +93,10 @@ const VideoEditor = () => {
     setIsPlaying(false)
   }
 
-  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL || ''
+  // Use deployed backend by default, but keep empty on localhost so dev proxy (/api/*) continues to work
+  const DEFAULT_BACKEND_URL = 'https://video-editor-app-backend.onrender.com'
+  const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
+  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? (isLocalhost ? '' : DEFAULT_BACKEND_URL)
   const checkBackend = async (timeout = 3000) => {
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeout)
