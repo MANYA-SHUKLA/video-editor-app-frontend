@@ -10,6 +10,7 @@ import Timeline from './Timeline'
 import UploadSection from './UploadSection'
 import ProcessingStatus from './ProcessingStatus'
 import { Overlay, VideoFile } from '@/types'
+import { getApiUrl } from '@/utils/api'
 import '@/styles/components/VideoEditor.css'
 
 const VideoEditor = () => {
@@ -93,14 +94,10 @@ const VideoEditor = () => {
     setIsPlaying(false)
   }
 
-  // Use deployed backend by default, but keep empty on localhost so dev proxy (/api/*) continues to work
-  const DEFAULT_BACKEND_URL = 'https://video-editor-app-backend.onrender.com'
-  const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? (isLocalhost ? '' : DEFAULT_BACKEND_URL)
   const checkBackend = async (timeout = 3000) => {
     const controller = new AbortController()
     const id = setTimeout(() => controller.abort(), timeout)
-    const healthUrl = API_BASE ? `${API_BASE}/api/health` : '/api/health'
+    const healthUrl = getApiUrl('/api/health')
     try {
       const res = await fetch(healthUrl, { signal: controller.signal })
       clearTimeout(id)
@@ -129,7 +126,7 @@ const VideoEditor = () => {
     const formData = new FormData()
     formData.append('video', videoFile.file)
     formData.append('overlays', JSON.stringify(overlays))
-    const uploadUrl = API_BASE ? `${API_BASE}/api/upload` : '/api/upload'
+    const uploadUrl = getApiUrl('/api/upload')
 
     try {
       const response = await fetch(uploadUrl, {
@@ -167,7 +164,7 @@ const VideoEditor = () => {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="video-editor-grid">
-        {/* Left Sidebar - Upload & Overlay Controls */}
+    
         <div className="video-editor-sidebar">
           <UploadSection 
             onUploadComplete={handleUploadComplete}

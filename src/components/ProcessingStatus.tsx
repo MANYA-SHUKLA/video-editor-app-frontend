@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { JobStatus } from '@/types'
 import { Loader, CheckCircle, XCircle, Download, Clock, RefreshCw } from 'lucide-react'
+import { getApiUrl } from '@/utils/api'
 import '@/styles/components/ProcessingStatus.css'
 
 interface ProcessingStatusProps {
@@ -13,14 +14,10 @@ const ProcessingStatus = ({ jobId }: ProcessingStatusProps) => {
   const [status, setStatus] = useState<JobStatus | null>(null)
   const [isPolling, setIsPolling] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  // Use deployed backend by default, but keep empty on localhost so dev proxy (/api/*) continues to work
-  const DEFAULT_BACKEND_URL = 'https://video-editor-app-backend.onrender.com'
-  const isLocalhost = typeof window !== 'undefined' && window.location.hostname === 'localhost'
-  const API_BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? (isLocalhost ? '' : DEFAULT_BACKEND_URL)
 
   const fetchStatus = async () => {
     try {
-      const statusUrl = API_BASE ? `${API_BASE}/api/status/${jobId}` : `/api/status/${jobId}`
+      const statusUrl = getApiUrl(`/api/status/${jobId}`)
       const response = await fetch(statusUrl)
       if (!response.ok) {
         throw new Error('Failed to fetch status')
@@ -52,7 +49,7 @@ const ProcessingStatus = ({ jobId }: ProcessingStatusProps) => {
     if (!status?.outputVideo) return
     
     try {
-      const resultUrl = API_BASE ? `${API_BASE}/api/result/${jobId}` : `/api/result/${jobId}`
+      const resultUrl = getApiUrl(`/api/result/${jobId}`)
       const response = await fetch(resultUrl)
       if (!response.ok) {
         throw new Error('Failed to download video')
