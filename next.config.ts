@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
+    const backend = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001';
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.BACKEND_URL ?? 'https://video-editor-app-backend.onrender.com'}/api/:path*`,
+        destination: `${backend.replace(/\/$/, '')}/api/:path*`,
       },
-    ]
+    ];
   }
 };
 
