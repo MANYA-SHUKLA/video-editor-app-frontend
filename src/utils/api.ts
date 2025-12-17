@@ -8,7 +8,7 @@ export const getApiUrl = (endpoint: string): string => {
 export async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const url = getApiUrl(endpoint);
   const headers = { 'Content-Type': 'application/json', ...(options.headers || {}) };
-  const res = await fetch(url, { ...options, headers, credentials: 'include' });
+  const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
     const body = await res.text().catch(() => null);
     throw new Error(`API error ${res.status}: ${res.statusText} - ${body}`);
